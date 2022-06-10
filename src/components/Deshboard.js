@@ -37,12 +37,11 @@ const useStyles=makeStyles((theme)=>({
     link:{
         textDecoration:'none',
         color:theme.palette.text.primary
-    }
+    },
+
 }))
 export default function ClippedDrawer() {
     const classes=useStyles();
-    const [flag,setFlag]=useState(false);
-    
         return ( <div>
             <Box sx={{ display: 'flex' }}>
             <CssBaseline />
@@ -110,16 +109,14 @@ export default function ClippedDrawer() {
                                 <ListItemIcon>
                                 <img src={ActIcon} alt="NA" style={{height:"18px", width:"18px",marginInlineStart:'4px'}}></img>
                                 </ListItemIcon>
-                                <ListItemText primary={"Activity"} />
+                                <ListItemText primary={"Workout"} />
                             </ListItemButton>
                         </ListItem>
                         </Link>
                         <Link to="/" className={classes.link}>
                             <ListItem key={"Logout"}
                             style={{marginTop:"-10px"}} disablePadding>
-                                <ListItemButton onClick={()=>{
-                                    setFlag(true)
-                                }}>
+                                <ListItemButton >
                                     <ListItemIcon>
                                         <LogoutIcon style={{marginInlineStart:'4px'}}></LogoutIcon>
                                     </ListItemIcon>
@@ -140,6 +137,4 @@ export default function ClippedDrawer() {
             </Box>
                 </div>
         );
-    
-   
 }

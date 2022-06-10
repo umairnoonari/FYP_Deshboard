@@ -10,6 +10,9 @@ import {Avatar,Grid,Typography} from '@mui/material';
 // import faker from 'faker';
 import {makeStyles} from "@material-ui/core/styles"
 import { textAlign } from '@mui/system';
+import db from '../db/firebase_config';
+import { DataSnapshot, onValue,ref } from 'firebase/database';
+import {useEffect,useState} from 'react';
 // import { margin, minWidth } from '@mui/system';
 
 let USER=[],STATUS=['Active','Pending','Blocked'];
@@ -61,9 +64,6 @@ USER[4]={
 
 
 console.log(USER)
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
 const useStyles=makeStyles((theme)=>({
     table:{
         minWidth:650,
@@ -88,13 +88,26 @@ const useStyles=makeStyles((theme)=>({
 }))
 
 export default function Activity() {
-    const classes=useStyles()
+  const classes=useStyles()
+  const [woData,setWOData]=useState([])
+  useEffect(()=>{
+    onValue(ref(db,`/${"Workouts"}`),snapshot=>{
+      const data=snapshot.val()
+      if(data!=null)
+      {
+        Object.values(data).map((itm)=>{
+          setWOData((i)=>[...i,itm])
+        })
+        console.log(data)
+      }
+    })
+  },[])
   return (
     <div className="row rounded bg-light p-3">
         <div className="col-12 rounded bg-white p-3">
             <div className='row'>
             <div className="col-11">
-                <h2>Activities</h2>
+                <h2>Workouts</h2>
             </div>
             <div className="col-1">
             <button className="btn btn-primary me-2" data-bs-target="#mymodal" data-bs-toggle="modal">Add</button>
@@ -126,16 +139,17 @@ export default function Activity() {
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell className={classes.tableHeaderCell}>User Info</TableCell>
-            <TableCell className={classes.tableHeaderCell}>Job Info</TableCell>
-            <TableCell className={classes.tableHeaderCell}>Joining Date</TableCell>
-            <TableCell className={classes.tableHeaderCell}>Status</TableCell>
+            <TableCell className={classes.tableHeaderCell}>Workout Name</TableCell>
+            <TableCell className={classes.tableHeaderCell}>Exercise</TableCell>
+            <TableCell className={classes.tableHeaderCell}>Time</TableCell>
+            <TableCell className={classes.tableHeaderCell}>Difficultly Level</TableCell>
+            <TableCell className={classes.tableHeaderCell}>Point</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {USER.map((row) => (
+          {woData.map((row,index) => (
             <TableRow
-              key={row.name}
+              key={index}
             >
               <TableCell>
                 <Grid container>
@@ -144,19 +158,23 @@ export default function Activity() {
                     </Grid>
                     <Grid item lg={10}>
                        <Typography className={classes.name}>{row.name}</Typography>
-                       <Typography color="textSecondary" variant="body2">{row.email}</Typography>
-                       <Typography color="textSecondary" variant="body2">{row.phone}</Typography>
                     </Grid>
                 </Grid>
                 
                
               </TableCell>
               <TableCell>
-                    <Typography color="primary" variant="subtitles2">{row.jobTitle}</Typography>
-                    <Typography color="textSecondary" variant="body2">{row.company}</Typography>
+              <Grid>
+                   {Object.values(row.Exercises).map(itm=><Typography>{itm.name}</Typography>)}
+              </Grid>
             </TableCell>
-              <TableCell >{row.joinDate}</TableCell>
-              <TableCell><button type="button" class="btn-close bg-warning" aria-label="Close"></button></TableCell>
+            <TableCell>
+              <Grid>
+                   {Object.values(row.Exercises).map(itm=><Typography>{itm.time} seconds</Typography>)}
+              </Grid>
+            </TableCell>
+              <TableCell >{row.diff}</TableCell>
+              <TableCell>{row.points}</TableCell>
             </TableRow>
           ))}
         </TableBody>
