@@ -1,5 +1,6 @@
 import {initializeApp} from 'firebase/app';
 import { getDatabase } from 'firebase/database';
+import {getStorage} from 'firebase/storage';
 const firebaseConfig = {
     apiKey: "AIzaSyAtZ4VgjYfQRiqpuNORdjhe3-8WGeyL0jU",
     authDomain: "fitness-enthusiast.firebaseapp.com",
@@ -12,4 +13,5 @@ const firebaseConfig = {
   };
 const App=initializeApp(firebaseConfig);
 const db=getDatabase(App);
-export default db
+const storage=getStorage(App)
+export {db,storage};

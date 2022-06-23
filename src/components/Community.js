@@ -14,10 +14,11 @@ import { textAlign } from '@mui/system';
 import { useEffect,useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 // import { margin, minWidth } from '@mui/system';
-import db from '../db/firebase_config';
+import {db} from '../db/firebase_config';
 import {  onValue,ref,remove } from 'firebase/database';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CustomDialog from './Dialog';
+import { Formik, useFormik } from "formik"
 const useStyles=makeStyles((theme)=>({
     table:{
         minWidth:650,
@@ -61,6 +62,16 @@ export default function Community() {
       }
     })
   },[])
+  const formik=useFormik({
+    initialValues:{catName:'',catBgImage:0,catImage:0,chat:{},info:{},members:{}},
+    onSubmit:values=>{
+      
+    }
+
+  })
+  const writeable=()=>{
+
+  }
   const handelDelete=(row)=>
   {
       remove(ref(db,`/${"Communities"}`+`/${row}`));
@@ -77,12 +88,33 @@ export default function Community() {
               <CustomDialog>
                   <h3 id="h">Add Community</h3>
                       <form>
+                      <h4 className="mt-2">Information of Community</h4>
                       <div class="form-group mt-2">
-                          
-                          <input type="text" class='form-control mt-2' placeholder='Category Name' style={{width:"500px"}}></input>
-                          <h4 className="mt-5">Information of Community</h4>
-                          <input type="text" class='form-control mt-2' placeholder='age' style={{width:"500px"}}></input>
-                          <input type="text" class='form-control mt-2' placeholder='Degree' style={{width:"500px"}}></input>
+                          <div class="form-floating mb-2">
+                              <input type="text" class="form-control" name="catName" id="CatName" placeholder="Category Name" />
+                              <label for="CatName">Category Name</label>
+                          </div>
+                          <div class="form-floating mb-2">
+                              <input type="text" class="form-control" id="AgeLimit" placeholder="Age Limit" />
+                              <label for="AgeLimit">Age Limit</label>
+                          </div>
+                          <div class="form-floating mb-2">
+                              <input type="text" class="form-control" id="Description1" placeholder="Description 1" />
+                              <label for="Description1">Description 1</label>
+                          </div>
+                          <div class="form-floating mb-2">
+                              <input type="text" class="form-control" id="Description2" placeholder="Description 2" />
+                              <label for="Description2">Description 2</label>
+                          </div>
+                          <div class="form-floating mb-2">
+                              <input type="text" class="form-control" id="Price" placeholder="Price" />
+                              <label for="Price">Price</label>
+                          </div>
+                          <div class="form-floating mb-2">
+                              <input type="text" class="form-control" id="type" placeholder="Type" />
+                              <label for="type">Type</label>
+                          </div>
+                              <input type="file" class="form-control" placeholder="Attach img" />
                           <input type="submit" value="Submit" class="btn btn-success mt-2" style={{width:"500px"}}></input>
                       </div>
                   </form>

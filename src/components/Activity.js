@@ -10,7 +10,7 @@ import {Avatar,Grid,Typography} from '@mui/material';
 // import faker from 'faker';
 import {makeStyles} from "@material-ui/core/styles"
 import { textAlign } from '@mui/system';
-import db from '../db/firebase_config';
+import {db} from '../db/firebase_config';
 import { DataSnapshot, onValue,ref, remove } from 'firebase/database';
 import {useEffect,useState} from 'react';
 // import { margin, minWidth } from '@mui/system';
@@ -51,10 +51,7 @@ export default function Activity() {
         const list=[];
         for(let itm in data)
         {
-            if(data[itm].trainer!=true)
-            {
-              list.push({itm,...data[itm]})
-            }
+           list.push({itm,...data[itm]})
         }
         setWOData(list)
         console.log(list)

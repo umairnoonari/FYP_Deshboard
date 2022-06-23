@@ -12,7 +12,7 @@ import {makeStyles} from "@material-ui/core/styles"
 import { textAlign } from '@mui/system';
 // import { margin, minWidth } from '@mui/system';
 import {useEffect,useState} from 'react';
-import db from '../db/firebase_config';
+import {db} from '../db/firebase_config';
 import { onValue,ref, remove } from 'firebase/database';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {Button} from "@material-ui/core"

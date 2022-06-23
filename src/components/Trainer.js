@@ -8,7 +8,7 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import {Avatar,Grid,Typography} from '@mui/material';
 import {useEffect,useState} from 'react';
-import db from '../db/firebase_config';
+import {db} from '../db/firebase_config';
 import { onValue,ref,remove } from 'firebase/database';
 // import faker from 'faker';
 import {makeStyles} from "@material-ui/core/styles"

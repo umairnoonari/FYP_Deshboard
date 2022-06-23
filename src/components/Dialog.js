@@ -28,7 +28,7 @@ const useStyles=makeStyles((theme)=>({
 const BootstrapDialogTitle = (props) => {
   const { children, onClose, ...other } = props;
   return (
-    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+    <DialogTitle sx={{ m: 0, p: 0 }} {...other}>
       {children}
       {onClose ? (
         <IconButton
@@ -36,11 +36,10 @@ const BootstrapDialogTitle = (props) => {
           onClick={onClose}
           sx={{
             position: 'absolute',
-            right: 8,
-            top: 8,
+            right:-480 ,
+            top: -43,
             color: (theme) => theme.palette.grey[500],
           }}
-          className="mt-2"
         >
           <CloseIcon />
         </IconButton>
@@ -75,8 +74,8 @@ export default function CustomDialog({children}) {
         open={open}
         className={classes.dialog}
       >
-        <BootstrapDialogTitle id="customized-dialog-title" className="text-center" onClose={handleClose}>
-          <h3>{children[0]}</h3>
+        <BootstrapDialogTitle id="customized-dialog-title" className="pt-3"  style={{height:"80px"}} onClose={handleClose}>
+          <h3 className='text-center pt-2'>{children[0]}</h3>
         </BootstrapDialogTitle>
         <DialogContent dividers>
           {children.filter((itm)=>itm.type!='h3')}
