@@ -11,59 +11,12 @@ import {Avatar,Grid,Typography} from '@mui/material';
 import {makeStyles} from "@material-ui/core/styles"
 import { textAlign } from '@mui/system';
 import db from '../db/firebase_config';
-import { DataSnapshot, onValue,ref } from 'firebase/database';
+import { DataSnapshot, onValue,ref, remove } from 'firebase/database';
 import {useEffect,useState} from 'react';
 // import { margin, minWidth } from '@mui/system';
-
-let USER=[],STATUS=['Active','Pending','Blocked'];
-USER[0]={
-        name:"Umair",
-        email:"umairnoonari98@gmail.com",
-        phone:"03142836313",
-        jobTitle:"Software Developer",
-        company:"Devsinc",
-        joinDate:"12/6/15",
-        status:"Active"
-}
-USER[1]={
-    name:"Tahir",
-    email:"Tahirnoonari98@gmail.com",
-    phone:"03142336313",
-    jobTitle:"Software Developer",
-    company:"ImgGen",
-    joinDate:"14/3/15",
-    status:"Pending"
-}
-USER[2]={
-    name:"Akash",
-    email:"Akashkumar@gmail.com",
-    phone:"0314656763",
-    jobTitle:"Software Engineer",
-    company:"Devsinc",
-    joinDate:"12/3/14",
-    status:"Blocked"
-}
-USER[3]={
-    name:"Nazeer",
-    email:"nazeer@gmail.com",
-    phone:"0315343432",
-    jobTitle:"Full Stack Developer",
-    company:"10Pearl",
-    joinDate:"12/6/20",
-    status:"Active"
-}
-USER[4]={
-    name:"Haseeb",
-    email:"haseebabbasi00@gmail.com",
-    phone:"0315343432",
-    jobTitle:"Dot Developer",
-    company:"Dost Bradari",
-    joinDate:"12/6/1999",
-    status:"Active"
-}
-
-
-console.log(USER)
+import {Button} from "@material-ui/core"
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
 const useStyles=makeStyles((theme)=>({
     table:{
         minWidth:650,
@@ -95,22 +48,33 @@ export default function Activity() {
       const data=snapshot.val()
       if(data!=null)
       {
-        Object.values(data).map((itm)=>{
-          setWOData((i)=>[...i,itm])
-        })
-        console.log(data)
+        const list=[];
+        for(let itm in data)
+        {
+            if(data[itm].trainer!=true)
+            {
+              list.push({itm,...data[itm]})
+            }
+        }
+        setWOData(list)
+        console.log(list)
       }
     })
   },[])
+  const handelDelete=(row)=>
+  {
+      remove(ref(db,`/${"Workouts"}`+`/${row}`));
+      console.log(row)
+  }
   return (
     <div className="row rounded bg-light p-3">
         <div className="col-12 rounded bg-white p-3">
             <div className='row'>
-            <div className="col-11">
+            <div className="col-10">
                 <h2>Workouts</h2>
             </div>
-            <div className="col-1">
-            <button className="btn btn-primary me-2" data-bs-target="#mymodal" data-bs-toggle="modal">Add</button>
+            <div className="col-2 mt-1">
+            <Button className="btn btn-primary ms-5" variant="outlined" data-bs-target="#mymodal" data-bs-toggle="modal"><AddIcon></AddIcon> Add New</Button>        
             <div class="modal mt-5" id="mymodal">
                 <div class="modal-dialog">
                     <div class="modal-content">
@@ -144,6 +108,7 @@ export default function Activity() {
             <TableCell className={classes.tableHeaderCell}>Time</TableCell>
             <TableCell className={classes.tableHeaderCell}>Difficultly Level</TableCell>
             <TableCell className={classes.tableHeaderCell}>Point</TableCell>
+            <TableCell className={classes.tableHeaderCell}>Action</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -175,6 +140,7 @@ export default function Activity() {
             </TableCell>
               <TableCell >{row.diff}</TableCell>
               <TableCell>{row.points}</TableCell>
+              <TableCell><Button variant="outlined" startIcon={<DeleteIcon />} onClick={()=>handelDelete(row.itm)}></Button></TableCell>
             </TableRow>
           ))}
         </TableBody>

@@ -9,13 +9,15 @@ import Paper from '@mui/material/Paper';
 import {Avatar,Grid,Typography} from '@mui/material';
 // import faker from 'faker';
 import {makeStyles} from "@material-ui/core/styles"
+import {Button,TextField} from "@material-ui/core"
 import { textAlign } from '@mui/system';
 import { useEffect,useState } from 'react';
+import AddIcon from '@mui/icons-material/Add';
 // import { margin, minWidth } from '@mui/system';
 import db from '../db/firebase_config';
-import { DataSnapshot, onValue,ref } from 'firebase/database';
-
-
+import {  onValue,ref,remove } from 'firebase/database';
+import DeleteIcon from '@mui/icons-material/Delete';
+import CustomDialog from './Dialog';
 const useStyles=makeStyles((theme)=>({
     table:{
         minWidth:650,
@@ -26,7 +28,7 @@ const useStyles=makeStyles((theme)=>({
     },
     tableHeaderCell:{
         fontWeight:'bold',
-        backgroundColor:theme.palette.primary.dark,
+        backgroundColor:theme.palette.info.main,
         color:theme.palette.getContrastText(theme.palette.primary.dark)
     },
     avatar:{
@@ -42,50 +44,49 @@ const useStyles=makeStyles((theme)=>({
 export default function Community() {
   const classes=useStyles()
   const [comData,setcomData]=useState([])
+  const [open,setOpen]=useState(false);
   let MData=[];
   useEffect(()=>{
     onValue(ref(db,`/${"Communities"}`),snapshot=>{
       const data=snapshot.val()
       if(data!=null)
       {
-        Object.values(data).map((itm)=>{
-          setcomData((i)=>[...i,itm])
-        })
-        console.log(comData)
+        const list=[];
+        for(let itm in data)
+        {
+           list.push({itm,...data[itm]})
+        }
+        setcomData(list)
+        console.log(list)
       }
     })
   },[])
-  // MData=JSON.parse(MData)
+  const handelDelete=(row)=>
+  {
+      remove(ref(db,`/${"Communities"}`+`/${row}`));
+      console.log(row)
+  }
   return (
-
     <div className="row rounded bg-light p-3">
         <div className="col-12 rounded bg-white p-3">
             <div className='row'>
-            <div className="col-11">
+            <div className="col-10">
                 <h2>Communities</h2>
             </div>
-            <div className="col-1">
-            <button className="btn btn-primary me-2" data-bs-target="#mymodal" data-bs-toggle="modal">Add</button>
-            <div className="modal mt-5" id="mymodal">
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h3>Add Trainer</h3>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div className="modal-body">
-                        <form>
-                            <div className="form-group mt-2">
-                                <input type="text" className='form-control mt-2' placeholder='Trainer Name'></input>
-                                <input type="number" className='form-control mt-2' placeholder='age'></input>
-                                <input type="text" className='form-control mt-2' placeholder='Degree'></input>
-                                <input type="submit" value="Submit" className="btn btn-success mt-2"></input>
-                            </div>
-                        </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div className="col-2">
+              <CustomDialog>
+                  <h3 id="h">Add Community</h3>
+                      <form>
+                      <div class="form-group mt-2">
+                          
+                          <input type="text" class='form-control mt-2' placeholder='Category Name' style={{width:"500px"}}></input>
+                          <h4 className="mt-5">Information of Community</h4>
+                          <input type="text" class='form-control mt-2' placeholder='age' style={{width:"500px"}}></input>
+                          <input type="text" class='form-control mt-2' placeholder='Degree' style={{width:"500px"}}></input>
+                          <input type="submit" value="Submit" class="btn btn-success mt-2" style={{width:"500px"}}></input>
+                      </div>
+                  </form>
+              </CustomDialog>
             </div>
             </div>
         </div>
@@ -94,11 +95,11 @@ export default function Community() {
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
-          
             <TableCell className={classes.tableHeaderCell}>Category Name</TableCell>
             <TableCell className={classes.tableHeaderCell}>Age Limit</TableCell>
             <TableCell className={classes.tableHeaderCell}>Description 1</TableCell>
             <TableCell className={classes.tableHeaderCell}>Description 2</TableCell>
+            <TableCell className={classes.tableHeaderCell}>Action</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -130,6 +131,7 @@ export default function Community() {
                     <Typography color="textSecondary" variant="body2">{row.info!=null?row.info.description2:"NA"}</Typography>
                   </Grid>
               </TableCell>
+              <TableCell><Button variant="outlined" startIcon={<DeleteIcon />} onClick={()=>handelDelete(row.itm)}></Button></TableCell>
             </TableRow>
           ))}
         </TableBody>

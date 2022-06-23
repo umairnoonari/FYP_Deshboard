@@ -13,7 +13,10 @@ import { textAlign } from '@mui/system';
 // import { margin, minWidth } from '@mui/system';
 import {useEffect,useState} from 'react';
 import db from '../db/firebase_config';
-import { onValue,ref } from 'firebase/database';
+import { onValue,ref, remove } from 'firebase/database';
+import DeleteIcon from '@mui/icons-material/Delete';
+import {Button} from "@material-ui/core"
+import uid from 'uid';
 const useStyles=makeStyles((theme)=>({
     table:{
         minWidth:650,
@@ -41,18 +44,30 @@ export default function User() {
   const classes=useStyles()
   const [userData,setUserData]=useState([])
   let MData=[];
+  // const uid=uid()
   useEffect(()=>{
     onValue(ref(db,`/${"Users"}`),snapshot=>{
       const data=snapshot.val()
       if(data!=null)
       {
-        Object.values(data).map((itm)=>{
-          setUserData((i)=>[...i,itm])
-        })
-        console.log(data)
+        const list=[];
+        for(let itm in data)
+        {
+            if(data[itm].trainer!=true)
+            {
+              list.push({itm,...data[itm]})
+            }
+        }
+        setUserData(list)
+        console.log(list)
       }
     })
   },[])
+  const handelDelete=(row)=>
+  {
+      remove(ref(db,`/${"Users"}`+`/${row}`));
+      console.log(row)
+  }
   return (
     <div className="row rounded bg-light p-3">
         <div className="col-12 rounded bg-white p-3 d-">
@@ -66,12 +81,13 @@ export default function User() {
             <TableCell className={classes.tableHeaderCell}>Name</TableCell>
             <TableCell className={classes.tableHeaderCell}>Email</TableCell>
             <TableCell className={classes.tableHeaderCell}>No of followers</TableCell>
+            <TableCell className={classes.tableHeaderCell}>Action</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {userData.map((row,index) => (
             <TableRow
-              key={index}
+              key={row.itm}
             >
               <TableCell>
                 <Grid container>
@@ -87,6 +103,7 @@ export default function User() {
                     <Typography color="primary" variant="subtitles2">{row.email}</Typography>
             </TableCell>
               <TableCell>{row.followersCount}</TableCell>
+              <TableCell><Button variant="outlined" startIcon={<DeleteIcon />} onClick={()=>handelDelete(row.itm)}></Button></TableCell>
             </TableRow>
           ))}
         </TableBody>
