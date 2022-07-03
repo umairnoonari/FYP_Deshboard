@@ -17,6 +17,7 @@ import {useEffect,useState} from 'react';
 import {Button} from "@material-ui/core"
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import CustomDialog from './Dialog';
 const useStyles=makeStyles((theme)=>({
     table:{
         minWidth:650,
@@ -71,27 +72,40 @@ export default function Activity() {
                 <h2>Workouts</h2>
             </div>
             <div className="col-2 mt-1">
-            <Button className="btn btn-primary ms-5" variant="outlined" data-bs-target="#mymodal" data-bs-toggle="modal"><AddIcon></AddIcon> Add New</Button>        
-            <div class="modal mt-5" id="mymodal">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h3>Add Trainer</h3>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                        <form>
-                            <div class="form-group mt-2">
-                                <input type="text" class='form-control mt-2' placeholder='Trainer Name'></input>
-                                <input type="number" class='form-control mt-2' placeholder='age'></input>
-                                <input type="text" class='form-control mt-2' placeholder='Degree'></input>
-                                <input type="submit" value="Submit" class="btn btn-success mt-2"></input>
-                            </div>
-                        </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <CustomDialog>
+                  <h3 id="h">Add Workout</h3>
+                      <form >
+                      <h4 className="mt-2">Information of Workout</h4>
+                      <div class="form-group mt-2">
+                          <div class="form-floating mb-2">
+                              <input type="text" class="form-control" name="catName" id="CatName" placeholder="Category Name" />
+                              <label for="CatName">Category Name</label>
+                          </div>
+                          <div class="form-floating mb-2">
+                              <input type="text" class="form-control" id="AgeLimit" name="ageLimit" placeholder="Age Limit"  />
+                              <label for="AgeLimit">Age Limit</label>
+                          </div>
+                          <div class="form-floating mb-2">
+                              <input type="text" class="form-control" id="Description1" name="description1" placeholder="Description 1" />
+                              <label for="Description1">Description 1</label>
+                          </div>
+                          <div class="form-floating mb-2">
+                              <input type="text" class="form-control" id="Description2"  placeholder="Description 2" name="description2" />
+                              <label for="Description2">Description 2</label>
+                          </div>
+                          <div class="form-floating mb-2">
+                              <input type="text" class="form-control" name="price" id="Price" placeholder="Price" />
+                              <label for="Price">Price</label>
+                          </div>
+                          <div class="form-floating mb-2">
+                              <input type="text" class="form-control" id="type" name="type" placeholder="Type"   />
+                              <label for="type">Type</label>
+                          </div>
+                              <input type="file" class="form-control" name="img" placeholder="Attach img"  />
+                          <input type="submit" value="Submit" class="btn btn-success mt-2" style={{width:"500px"}}></input>
+                      </div>
+                  </form>
+              </CustomDialog>
             </div>
             </div>
         </div>

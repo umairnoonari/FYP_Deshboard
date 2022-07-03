@@ -14,8 +14,9 @@ import { textAlign } from '@mui/system';
 import { useEffect,useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 // import { margin, minWidth } from '@mui/system';
-import {db} from '../db/firebase_config';
-import {  onValue,ref,remove } from 'firebase/database';
+import {db,storage} from '../db/firebase_config';
+import {  onValue,ref,remove,set } from 'firebase/database';
+import * as store from 'firebase/storage';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CustomDialog from './Dialog';
 import { Formik, useFormik } from "formik"
@@ -46,7 +47,9 @@ export default function Community() {
   const classes=useStyles()
   const [comData,setcomData]=useState([])
   const [open,setOpen]=useState(false);
-  let MData=[];
+  const [formikdata,setformikData]=useState()
+  const [file,setFile]=useState()
+  const [url,setUrl]=useState()
   useEffect(()=>{
     onValue(ref(db,`/${"Communities"}`),snapshot=>{
       const data=snapshot.val()
@@ -58,19 +61,43 @@ export default function Community() {
            list.push({itm,...data[itm]})
         }
         setcomData(list)
-        console.log(list)
       }
     })
   },[])
   const formik=useFormik({
-    initialValues:{catName:'',catBgImage:0,catImage:0,chat:{},info:{},members:{}},
-    onSubmit:values=>{
-      
-    }
-
+    initialValues:{catName:'',catBgImage:0,catImage:0,ageLimit:0,description1:"",description2:"",price:"",type:""},
+    onSubmit:async values=>{
+      console.log(file)
+      var data={}
+        const imageRef=store.ref(storage,`images/${file.name}`);
+        await store.uploadBytes(imageRef,file).then(async()=>{
+             await store.getDownloadURL(imageRef).then((url)=>{
+                console.log(url)
+                data={ageLimit:values.ageLimit,description1:values.description1,description2:values.description2,image:url,price:values.price,type:values.type}
+            }).catch((error)=>{
+                console.log(error.message,"Error getting the url image")
+            })
+            setFile(null)
+        }).catch((error)=>{
+            console.log(error.message,)
+        })
+        if(info.length!=0)
+        {
+          set(ref(db,`/Communities/Community ${(comData.length+1)}`),{
+            catName:values.catName,catImage:values.catImage,catBgImage:values.catBgImage,info:data
+          })
+        }
+        else
+        {
+          set(ref(db,`/Communities/Community ${(comData.length+1)}`),{
+            catName:values.catName,catImage:values.catImage,catBgImage:values.catBgImage
+          })
+        }
+      }
   })
-  const writeable=()=>{
-
+  const handel=(e)=>{
+      const file=e.target.files
+      setFile(file[0])
   }
   const handelDelete=(row)=>
   {
@@ -87,34 +114,34 @@ export default function Community() {
             <div className="col-2">
               <CustomDialog>
                   <h3 id="h">Add Community</h3>
-                      <form>
+                      <form onSubmit={formik.handleSubmit}>
                       <h4 className="mt-2">Information of Community</h4>
                       <div class="form-group mt-2">
                           <div class="form-floating mb-2">
-                              <input type="text" class="form-control" name="catName" id="CatName" placeholder="Category Name" />
+                              <input type="text" class="form-control" name="catName" id="CatName" placeholder="Category Name" value={formik.values.catName} onChange={formik.handleChange} />
                               <label for="CatName">Category Name</label>
                           </div>
                           <div class="form-floating mb-2">
-                              <input type="text" class="form-control" id="AgeLimit" placeholder="Age Limit" />
+                              <input type="text" class="form-control" id="AgeLimit" name="ageLimit" placeholder="Age Limit"  value={formik.values.ageLimit} onChange={formik.handleChange} />
                               <label for="AgeLimit">Age Limit</label>
                           </div>
                           <div class="form-floating mb-2">
-                              <input type="text" class="form-control" id="Description1" placeholder="Description 1" />
+                              <input type="text" class="form-control" id="Description1" name="description1" placeholder="Description 1" value={formik.values.description1} onChange={formik.handleChange} />
                               <label for="Description1">Description 1</label>
                           </div>
                           <div class="form-floating mb-2">
-                              <input type="text" class="form-control" id="Description2" placeholder="Description 2" />
+                              <input type="text" class="form-control" id="Description2"  placeholder="Description 2" name="description2"  value={formik.values.description2} onChange={formik.handleChange}/>
                               <label for="Description2">Description 2</label>
                           </div>
                           <div class="form-floating mb-2">
-                              <input type="text" class="form-control" id="Price" placeholder="Price" />
+                              <input type="text" class="form-control" name="price" id="Price" placeholder="Price" value={formik.values.price}  onChange={formik.handleChange}/>
                               <label for="Price">Price</label>
                           </div>
                           <div class="form-floating mb-2">
-                              <input type="text" class="form-control" id="type" placeholder="Type" />
+                              <input type="text" class="form-control" id="type" name="type" placeholder="Type" value={formik.values.type}  onChange={formik.handleChange} />
                               <label for="type">Type</label>
                           </div>
-                              <input type="file" class="form-control" placeholder="Attach img" />
+                              <input type="file" class="form-control" name="img" placeholder="Attach img" onChange={handel} />
                           <input type="submit" value="Submit" class="btn btn-success mt-2" style={{width:"500px"}}></input>
                       </div>
                   </form>

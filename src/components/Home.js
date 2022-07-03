@@ -1,12 +1,11 @@
 import { Avatar, Typography } from "@mui/material";
 import { useState } from "react";
-// import {Button,Modal,Box} from "@material-ui/core"
-import CustomDialog from "./Dialog";
-import {storage} from '../db/firebase_config';
-import {ref,uploadBytes,getDownloadURL} from 'firebase/storage';
+import {storage,db} from '../db/firebase_config';
+import * as store from 'firebase/storage';
+// import  from 'firebase/database';
 function Home()
 {
-    const [file,setFile]=useState(false)
+    const [file,setFile]=useState()
     const [url,setUrl]=useState(null);
     function handelChange(e)
     {
@@ -16,9 +15,9 @@ function Home()
     function save()
     {
         console.log(file)
-        const imageRef=ref(storage,`images/${file.name}`);
-        uploadBytes(imageRef,file).then(()=>{
-            getDownloadURL(imageRef).then((url)=>{
+        const imageRef=store.ref(storage,`images/${file.name}`);
+        store.uploadBytes(imageRef,file).then(()=>{
+            store.getDownloadURL(imageRef).then((url)=>{
                 console.log(url)
                 setUrl(url)
             }).catch((error)=>{
