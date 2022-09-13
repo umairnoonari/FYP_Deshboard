@@ -13,10 +13,11 @@ import AddIcon from '@mui/icons-material/Add';
 import { makeStyles } from '@material-ui/core';
 import { ChildCareRounded } from '@mui/icons-material';
 import {db,storage} from '../db/firebase_config';
-import {  onValue,ref,remove,set } from 'firebase/database';
+import {  onValue,ref,remove,set,update } from 'firebase/database';
 import * as store from 'firebase/storage';
 import { useState,useEffect } from 'react';
 import { useFormik } from 'formik';
+import UpdateIcon from '@mui/icons-material/Update';
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
     padding: theme.spacing(2),
@@ -90,16 +91,21 @@ export default function CustomDialog(props) {
   const handleClose = () => {
     setOpen(false);
   };
+  var data={}
+  const AgeLimit=props.data["info"]!=undefined?props.data["info"].ageLimit:"NA"
+  const description1=props.data["info"]!=undefined?props.data["info"].description1:"NA";
+  const description2=props.data["info"]!=undefined?props.data["info"].description2:"NA"
+  const price=props.data["info"]!=undefined?props.data["info"].price:"NA"
+  const type=props.data["info"]!=undefined?props.data["info"].type:"NA";
   const formik=useFormik({
-    initialValues:{catName:'',catBgImage:4,catImage:4,ageLimit:"",description1:"",description2:"",price:0,type:"",trainer:""},
+    initialValues:{catName:props.data.catName,catBgImage:0,catImage:0,ageLimit:AgeLimit,description1:description1,description2:description2,price:price,type:type,trainer:""},
     onSubmit:async values=>{
       console.log(file)
-      var data={}
-        const imageRef=store.ref(storage,`communities/${file.name}`);
+        const imageRef=store.ref(storage,`images/${file.name}`);
         await store.uploadBytes(imageRef,file).then(async()=>{
              await store.getDownloadURL(imageRef).then((url)=>{
                 console.log(url)
-                data={ageLimit:values.ageLimit,description1:values.description1,description2:values.description2,image:url,price:values.price,trainer:values.trainer,type:values.type}
+                data={ageLimit:values.ageLimit,description1:values.description1,description2:values.description2,image:url,price:values.price,type:values.type,trainer:values.trainer}
             }).catch((error)=>{
                 console.log(error.message,"Error getting the url image")
             })
@@ -109,11 +115,11 @@ export default function CustomDialog(props) {
         })
         if(values.catName!=null&&Object.keys(data).length!=null)
         {
-          set(ref(db,`/Communities/Community ${(props.data.length+1)}`),{
-            catName:values.catName,catImage:values.catImage,catBgImage:values.catBgImage,chat:{},competition:{isStarted:false},info:data,members:{}
+          update(ref(db,`/Communities/${props.data.itm}`),{
+            catName:values.catName,catImage:values.catImage,catBgImage:values.catBgImage,info:data
           })
           setOpen(false);
-      }
+        }
       }
   })
   const handel=(e)=>{
@@ -122,8 +128,8 @@ export default function CustomDialog(props) {
   }
   return (
     <div>
-      <Button variant="outlined"  className="ms-5" onClick={handleClickOpen} style={{height:70}}>
-      <AddIcon></AddIcon> Add New
+      <Button variant="outlined"  className="ms-5" onClick={handleClickOpen}>
+      <UpdateIcon />
       </Button>
       <BootstrapDialog
         onClose={handleClose}
@@ -132,7 +138,7 @@ export default function CustomDialog(props) {
         className={classes.dialog}
       >
         <BootstrapDialogTitle id="customized-dialog-title" className="pt-3"  style={{height:"80px"}} onClose={handleClose}>
-          <h3 className='text-center pt-2'>Add Community</h3>
+          <h3 className='text-center pt-2'>Update Community</h3>
         </BootstrapDialogTitle>
         <DialogContent dividers>
                       <form onSubmit={formik.handleSubmit}>

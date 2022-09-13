@@ -19,7 +19,9 @@ import {  onValue,ref,remove,set } from 'firebase/database';
 import * as store from 'firebase/storage';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CustomDialog from './Dialog';
+import Community_Update from './Community_Update';
 import { Formik, useFormik } from "formik"
+import SearchIcon from '@mui/icons-material/Search';
 const useStyles=makeStyles((theme)=>({
     table:{
         minWidth:650,
@@ -30,7 +32,7 @@ const useStyles=makeStyles((theme)=>({
     },
     tableHeaderCell:{
         fontWeight:'bold',
-        backgroundColor:theme.palette.info.main,
+        // backgroundColor:theme.palette.info.main,
         color:theme.palette.getContrastText(theme.palette.primary.dark)
     },
     avatar:{
@@ -50,6 +52,7 @@ export default function Community() {
   const [formikdata,setformikData]=useState()
   const [file,setFile]=useState()
   const [url,setUrl]=useState()
+  const [search,setSearch]=useState("")
   useEffect(()=>{
     onValue(ref(db,`/${"Communities"}`),snapshot=>{
       const data=snapshot.val()
@@ -64,41 +67,6 @@ export default function Community() {
       }
     })
   },[])
-  const formik=useFormik({
-    initialValues:{catName:'',catBgImage:0,catImage:0,ageLimit:0,description1:"",description2:"",price:"",type:""},
-    onSubmit:async values=>{
-      console.log(file)
-      var data={}
-        const imageRef=store.ref(storage,`images/${file.name}`);
-        await store.uploadBytes(imageRef,file).then(async()=>{
-             await store.getDownloadURL(imageRef).then((url)=>{
-                console.log(url)
-                data={ageLimit:values.ageLimit,description1:values.description1,description2:values.description2,image:url,price:values.price,type:values.type}
-            }).catch((error)=>{
-                console.log(error.message,"Error getting the url image")
-            })
-            setFile(null)
-        }).catch((error)=>{
-            console.log(error.message,)
-        })
-        if(info.length!=0)
-        {
-          set(ref(db,`/Communities/Community ${(comData.length+1)}`),{
-            catName:values.catName,catImage:values.catImage,catBgImage:values.catBgImage,info:data
-          })
-        }
-        else
-        {
-          set(ref(db,`/Communities/Community ${(comData.length+1)}`),{
-            catName:values.catName,catImage:values.catImage,catBgImage:values.catBgImage
-          })
-        }
-      }
-  })
-  const handel=(e)=>{
-      const file=e.target.files
-      setFile(file[0])
-  }
   const handelDelete=(row)=>
   {
       remove(ref(db,`/${"Communities"}`+`/${row}`));
@@ -106,45 +74,23 @@ export default function Community() {
   }
   return (
     <div className="row rounded bg-light p-3">
+        <h1>Communities</h1>
         <div className="col-12 rounded bg-white p-3">
+            
             <div className='row'>
             <div className="col-10">
-                <h2>Communities</h2>
+            <div class="input-group" >
+              <div class="form-floating mb-2">
+                  <input type="text" class="form-control" name="Search" id="WorkoutName" placeholder="Search" style={{height:70,width:500,fontSize:20}} onChange={(e)=>{setSearch(e.target.value)}}/>
+                  <label for="WorkoutName" className='mt-1'>Search</label>
+              </div>
+              <button id="search-button" type="button" class="btn" style={{height:70,width:80,fontSize:20,backgroundColor:"#3cda3c"}} >
+                <SearchIcon></SearchIcon>
+              </button>
+            </div>
             </div>
             <div className="col-2">
-              <CustomDialog>
-                  <h3 id="h">Add Community</h3>
-                      <form onSubmit={formik.handleSubmit}>
-                      <h4 className="mt-2">Information of Community</h4>
-                      <div class="form-group mt-2">
-                          <div class="form-floating mb-2">
-                              <input type="text" class="form-control" name="catName" id="CatName" placeholder="Category Name" value={formik.values.catName} onChange={formik.handleChange} />
-                              <label for="CatName">Category Name</label>
-                          </div>
-                          <div class="form-floating mb-2">
-                              <input type="text" class="form-control" id="AgeLimit" name="ageLimit" placeholder="Age Limit"  value={formik.values.ageLimit} onChange={formik.handleChange} />
-                              <label for="AgeLimit">Age Limit</label>
-                          </div>
-                          <div class="form-floating mb-2">
-                              <input type="text" class="form-control" id="Description1" name="description1" placeholder="Description 1" value={formik.values.description1} onChange={formik.handleChange} />
-                              <label for="Description1">Description 1</label>
-                          </div>
-                          <div class="form-floating mb-2">
-                              <input type="text" class="form-control" id="Description2"  placeholder="Description 2" name="description2"  value={formik.values.description2} onChange={formik.handleChange}/>
-                              <label for="Description2">Description 2</label>
-                          </div>
-                          <div class="form-floating mb-2">
-                              <input type="text" class="form-control" name="price" id="Price" placeholder="Price" value={formik.values.price}  onChange={formik.handleChange}/>
-                              <label for="Price">Price</label>
-                          </div>
-                          <div class="form-floating mb-2">
-                              <input type="text" class="form-control" id="type" name="type" placeholder="Type" value={formik.values.type}  onChange={formik.handleChange} />
-                              <label for="type">Type</label>
-                          </div>
-                              <input type="file" class="form-control" name="img" placeholder="Attach img" onChange={handel} />
-                          <input type="submit" value="Submit" class="btn btn-success mt-2" style={{width:"500px"}}></input>
-                      </div>
-                  </form>
+              <CustomDialog data={comData}>
               </CustomDialog>
             </div>
             </div>
@@ -152,26 +98,35 @@ export default function Community() {
     <div className="col-12 mt-3 p-1" style={{marginInlineStart:'-13px'}}>
     <TableContainer component={Paper} className={classes.tableContainer}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
+        <TableHead style={{backgroundColor:"#3cda3c"}}>
           <TableRow>
             <TableCell className={classes.tableHeaderCell}>Category Name</TableCell>
             <TableCell className={classes.tableHeaderCell}>Age Limit</TableCell>
-            <TableCell className={classes.tableHeaderCell}>Description 1</TableCell>
-            <TableCell className={classes.tableHeaderCell}>Description 2</TableCell>
+            <TableCell className={classes.tableHeaderCell}>Type</TableCell>
+            <TableCell className={classes.tableHeaderCell}>Price</TableCell>
             <TableCell className={classes.tableHeaderCell}>Action</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {console.log(comData)}
-          {comData.map((row,index) => (
+          {comData.filter((itm)=>{
+            if(search=="")
+            {
+              return itm
+            }
+            else if(itm.catName.toLowerCase().includes(search.toLowerCase()))
+            {
+              return itm
+            }
+          }).map((row,index) => (
             <TableRow
               key={index}
             >
               <TableCell>
                 <Grid container>
-                    {/* <Grid item lg={2}>
+                    <Grid item lg={2}>
                          <Avatar alt={row.name} src="." className={classes.avatar}></Avatar>
-                    </Grid> */}
+                    </Grid>
                     <Grid item lg={4}>
                        <Typography className={classes.name}>{row.catName}</Typography>
                     </Grid>
@@ -182,15 +137,23 @@ export default function Community() {
             </TableCell>
               <TableCell >
                     <Grid item lg={4}>
-                    <Typography color="textSecondary" variant="body2">{row.info!=null?row.info.description1:"NA"}</Typography>
+                    <Typography color="textSecondary" variant="body2">{row.info!=null?row.info.type:"NA"}</Typography>
                   </Grid>
                     </TableCell>
               <TableCell>
                 <Grid item lg={4}>
-                    <Typography color="textSecondary" variant="body2">{row.info!=null?row.info.description2:"NA"}</Typography>
+                    <Typography color="textSecondary" variant="body2">{row.info!=null?row.info.price:"NA"}</Typography>
                   </Grid>
               </TableCell>
-              <TableCell><Button variant="outlined" startIcon={<DeleteIcon />} onClick={()=>handelDelete(row.itm)}></Button></TableCell>
+              <TableCell><Grid container>
+                    <Grid item lg={1}>
+                    <Button variant="outlined" startIcon={<DeleteIcon />} onClick={()=>handelDelete(row.itm)}>
+                    </Button>
+                    </Grid>
+                    <Grid item lg={1}>
+                    <Community_Update data={row}></Community_Update>
+                    </Grid>
+                </Grid></TableCell>
             </TableRow>
           ))}
         </TableBody>

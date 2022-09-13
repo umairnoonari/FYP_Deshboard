@@ -17,7 +17,10 @@ import {useEffect,useState} from 'react';
 import {Button} from "@material-ui/core"
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import CustomDialog from './Dialog';
+import WorkoutDialog from './WorkoutDialog';
+import ViewExercise from './ViewExercise';
+import WorkoutDialogUpdate from './WorkoutDialogUpdate';
+import SearchIcon from '@mui/icons-material/Search';
 const useStyles=makeStyles((theme)=>({
     table:{
         minWidth:650,
@@ -28,7 +31,7 @@ const useStyles=makeStyles((theme)=>({
     },
     tableHeaderCell:{
         fontWeight:'bold',
-        backgroundColor:theme.palette.primary.dark,
+        // backgroundColor:theme.palette.primary.dark,
         color:theme.palette.getContrastText(theme.palette.primary.dark)
     },
     avatar:{
@@ -44,6 +47,7 @@ const useStyles=makeStyles((theme)=>({
 export default function Activity() {
   const classes=useStyles()
   const [woData,setWOData]=useState([])
+  const [search,setSearch]=useState("")
   useEffect(()=>{
     onValue(ref(db,`/${"Workouts"}`),snapshot=>{
       const data=snapshot.val()
@@ -55,7 +59,6 @@ export default function Activity() {
            list.push({itm,...data[itm]})
         }
         setWOData(list)
-        console.log(list)
       }
     })
   },[])
@@ -64,66 +67,55 @@ export default function Activity() {
       remove(ref(db,`/${"Workouts"}`+`/${row}`));
       console.log(row)
   }
+  var exe=[]
+  const handelShow=(row)=>{
+
+  }
   return (
     <div className="row rounded bg-light p-3">
+      <h1>Workouts</h1>
         <div className="col-12 rounded bg-white p-3">
+            
             <div className='row'>
             <div className="col-10">
-                <h2>Workouts</h2>
+                <div class="input-group" >
+                  <div class="form-floating mb-2">
+                      <input type="text" class="form-control" name="Search" id="WorkoutName" placeholder="Search" style={{height:70,width:500,fontSize:20}} onChange={(e)=>{setSearch(e.target.value)}}/>
+                      <label for="WorkoutName" className='mt-1'>Search</label>
+                  </div>
+                  <button id="search-button" type="button" class="btn" style={{height:70,width:80,fontSize:20,backgroundColor:"#3cda3c"}} >
+                    <SearchIcon></SearchIcon>
+                  </button>
+                </div>
             </div>
             <div className="col-2 mt-1">
-            <CustomDialog>
-                  <h3 id="h">Add Workout</h3>
-                      <form >
-                      <h4 className="mt-2">Information of Workout</h4>
-                      <div class="form-group mt-2">
-                          <div class="form-floating mb-2">
-                              <input type="text" class="form-control" name="catName" id="CatName" placeholder="Category Name" />
-                              <label for="CatName">Category Name</label>
-                          </div>
-                          <div class="form-floating mb-2">
-                              <input type="text" class="form-control" id="AgeLimit" name="ageLimit" placeholder="Age Limit"  />
-                              <label for="AgeLimit">Age Limit</label>
-                          </div>
-                          <div class="form-floating mb-2">
-                              <input type="text" class="form-control" id="Description1" name="description1" placeholder="Description 1" />
-                              <label for="Description1">Description 1</label>
-                          </div>
-                          <div class="form-floating mb-2">
-                              <input type="text" class="form-control" id="Description2"  placeholder="Description 2" name="description2" />
-                              <label for="Description2">Description 2</label>
-                          </div>
-                          <div class="form-floating mb-2">
-                              <input type="text" class="form-control" name="price" id="Price" placeholder="Price" />
-                              <label for="Price">Price</label>
-                          </div>
-                          <div class="form-floating mb-2">
-                              <input type="text" class="form-control" id="type" name="type" placeholder="Type"   />
-                              <label for="type">Type</label>
-                          </div>
-                              <input type="file" class="form-control" name="img" placeholder="Attach img"  />
-                          <input type="submit" value="Submit" class="btn btn-success mt-2" style={{width:"500px"}}></input>
-                      </div>
-                  </form>
-              </CustomDialog>
+              <WorkoutDialog data={woData}></WorkoutDialog>
             </div>
             </div>
         </div>
     <div className="col-12 mt-3 p-1" style={{marginInlineStart:'-13px'}}>
     <TableContainer component={Paper} className={classes.tableContainer}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
+        <TableHead style={{backgroundColor:"#3cda3c"}}>
           <TableRow>
             <TableCell className={classes.tableHeaderCell}>Workout Name</TableCell>
             <TableCell className={classes.tableHeaderCell}>Exercise</TableCell>
-            <TableCell className={classes.tableHeaderCell}>Time</TableCell>
             <TableCell className={classes.tableHeaderCell}>Difficultly Level</TableCell>
             <TableCell className={classes.tableHeaderCell}>Point</TableCell>
             <TableCell className={classes.tableHeaderCell}>Action</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {woData.map((row,index) => (
+          {woData.filter((itm)=>{
+            if(search=="")
+            {
+              return itm
+            }
+            else if(itm.name.toLowerCase().includes(search.toLowerCase()))
+            {
+              return itm
+            }
+          }).map((row,index) => (
             <TableRow
               key={index}
             >
@@ -136,22 +128,26 @@ export default function Activity() {
                        <Typography className={classes.name}>{row.name}</Typography>
                     </Grid>
                 </Grid>
-                
-               
               </TableCell>
               <TableCell>
               <Grid>
-                   {Object.values(row.Exercises).map(itm=><Typography>{itm.name}</Typography>)}
-              </Grid>
-            </TableCell>
-            <TableCell>
-              <Grid>
-                   {Object.values(row.Exercises).map(itm=><Typography>{itm.time} seconds</Typography>)}
+                  {console.log(row.Exercises)}
+                   <ViewExercise data={row.Exercises!=undefined?row.Exercises:"NA"} data1={row.itm}></ViewExercise>
               </Grid>
             </TableCell>
               <TableCell >{row.diff}</TableCell>
               <TableCell>{row.points}</TableCell>
-              <TableCell><Button variant="outlined" startIcon={<DeleteIcon />} onClick={()=>handelDelete(row.itm)}></Button></TableCell>
+              <TableCell>
+              <Grid container>
+                    <Grid item lg={1}>
+                    <Button variant="outlined" startIcon={<DeleteIcon />} onClick={()=>handelDelete(row.itm)}>
+                    </Button>
+                    </Grid>
+                    <Grid item lg={1}>
+                    <WorkoutDialogUpdate data={row}/>
+                    </Grid>
+                </Grid>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
