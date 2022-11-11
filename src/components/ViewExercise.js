@@ -126,7 +126,7 @@ export default function ViewExercise(props) {
         <DialogContent dividers>
         <TableContainer component={Paper} className={classes.tableContainer}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead style={{backgroundColor:"#3cda3c"}}>
+        <TableHead style={{backgroundColor:"#AFEA0D"}}>
           <TableRow>
             <TableCell className={classes.tableHeaderCell}>Exercise Name</TableCell>
             <TableCell className={classes.tableHeaderCell}>Time</TableCell>

@@ -91,7 +91,7 @@ export default function User() {
                   <input type="text" class="form-control" name="Search" id="WorkoutName" placeholder="Search" style={{height:70,width:500,fontSize:20}} onChange={(e)=>{setSearch(e.target.value)}}/>
                   <label for="WorkoutName" className='mt-1'>Search</label>
               </div>
-              <button id="search-button" type="button" class="btn" style={{height:70,width:80,fontSize:20,backgroundColor:"#3cda3c"}} >
+              <button id="search-button" type="button" class="btn" style={{height:70,width:80,fontSize:20,backgroundColor:"#AFEA0D"}} >
                 <SearchIcon></SearchIcon>
               </button>
             </div>
@@ -101,7 +101,7 @@ export default function User() {
     <div className="col-12 mt-3 p-1" style={{marginInlineStart:'-13px'}}>
     <TableContainer component={Paper} className={classes.tableContainer}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead style={{backgroundColor:"#3cda3c"}}>
+        <TableHead style={{backgroundColor:"#AFEA0D"}}>
           <TableRow>
             <TableCell className={classes.tableHeaderCell}>Name</TableCell>
             <TableCell className={classes.tableHeaderCell}>Email</TableCell>
@@ -138,8 +138,7 @@ export default function User() {
             </TableCell>
               <TableCell>{row.followersCount}</TableCell>
               <TableCell>
-                <Button variant="outlined" startIcon={<DeleteIcon />} onClick={()=>handelDelete(row.itm)}></Button>
-                <Button variant="outlined" className="ms-2" onClick={()=>{handelUpdate(row.itm)}}> Assign</Button>
+                <Button variant="outlined" className="ms-2" onClick={()=>{handelUpdate(row.itm)}}> Assign </Button>
               </TableCell>
             </TableRow>
           ))}

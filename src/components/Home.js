@@ -94,7 +94,7 @@ function Home()
     return<>
             <Row className="bg-light rounded border p-3">
                 <Row className='d-flex justify-content-evenly '>
-                    <h1 className='mt-2 ms-2'>Deshboard</h1>
+                    <h1 className='mt-2 ms-2'>Dashboard</h1>
                     <Col lg={4} md={4} sm={4} className='bg-warning mt-3' style={{width:250,height:250,borderRadius:20}}>
                        <h1 className="mt-2 ms-2 text-light">Community</h1>
                        <h1 style={{fontSize:100}} className='ms-5 text-light ps-4 pt-2'>{Object.keys(comData).length}<sup>+</sup></h1>
@@ -113,7 +113,7 @@ function Home()
                         <h2 className="mt-4 ms-2">Users</h2>
                         <TableContainer component={Paper} className={classes.tableContainer}>
                         <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                            <TableHead style={{backgroundColor:"#3cda3c"}}>
+                            <TableHead style={{backgroundColor:"#AFEA0D"}}>
                             <TableRow>
                                 <TableCell className={classes.tableHeaderCell}>Name</TableCell>
                                 <TableCell className={classes.tableHeaderCell}>Email</TableCell>
@@ -146,7 +146,7 @@ function Home()
                     <h2 className="mt-4 ms-2">Trainers</h2>
                     <TableContainer component={Paper} className={classes.tableContainer}>
                         <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                            <TableHead style={{backgroundColor:"#3cda3c"}}>
+                            <TableHead style={{backgroundColor:"#AFEA0D"}}>
                             <TableRow>
                                 <TableCell className={classes.tableHeaderCell}>Name</TableCell>
                                 <TableCell className={classes.tableHeaderCell}>Email</TableCell>

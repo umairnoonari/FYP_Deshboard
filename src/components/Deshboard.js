@@ -45,7 +45,7 @@ export default function ClippedDrawer() {
         return ( <div>
             <Box sx={{ display: 'flex' }}>
             <CssBaseline />
-            <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }} style={{backgroundColor:"#3cda3c"}}>
+            <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }} style={{backgroundColor:"#AFEA0D"}}>
                 <Toolbar>
                 <Typography variant="h6" noWrap component="div">
                     Fitness Enthusiasts
